@@ -54,7 +54,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           i.name === item.name ? { ...i, quantity: i.quantity + item.quantity } : i
         );
       }
-      return [...prev, { ...item, id: Math.random().toString(36).substr(2, 9) }];
+      return [...prev, { ...item, id: crypto.randomUUID() }];
     });
   };
 

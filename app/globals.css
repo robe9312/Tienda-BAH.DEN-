@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+  
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
@@ -19,44 +23,50 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+
+  @keyframes mesh {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
 }
 
 @layer base {
   :root {
     --background: #ffffff;
-    --foreground: #0a0a0a;
-    --primary: #ff6b00;
+    --foreground: #000000;
+    --primary: #ff5500; /* More vibrant, high-end orange */
     --primary-foreground: #ffffff;
     --secondary: #f5f5f5;
-    --secondary-foreground: #171717;
+    --secondary-foreground: #000000;
     --muted: #f5f5f5;
-    --muted-foreground: #737373;
+    --muted-foreground: #666666;
     --accent: #f5f5f5;
-    --accent-foreground: #171717;
+    --accent-foreground: #000000;
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
     --border: #e5e5e5;
     --input: #e5e5e5;
-    --ring: #ff6b00;
-    --radius: 0.5rem;
+    --ring: #ff5500;
+    --radius: 0rem; /* Sharp corners for brutalist/luxury feel */
   }
 
   .dark {
-    --background: #0a0a0a;
+    --background: #050505; /* Deeper black */
     --foreground: #ffffff;
-    --primary: #ff6b00;
+    --primary: #ff5500;
     --primary-foreground: #ffffff;
-    --secondary: #171717;
+    --secondary: #111111;
     --secondary-foreground: #ffffff;
-    --muted: #171717;
-    --muted-foreground: #a3a3a3;
-    --accent: #171717;
+    --muted: #111111;
+    --muted-foreground: #888888;
+    --accent: #111111;
     --accent-foreground: #ffffff;
     --destructive: #7f1d1d;
     --destructive-foreground: #ffffff;
-    --border: #262626;
-    --input: #262626;
-    --ring: #ff6b00;
+    --border: #1a1a1a;
+    --input: #1a1a1a;
+    --ring: #ff5500;
   }
 }
 
@@ -68,6 +78,41 @@
     background-color: var(--background);
     color: var(--foreground);
     font-feature-settings: "rlig" 1, "calt" 1;
+    letter-spacing: -0.01em;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer utilities {
+  .bg-mesh {
+    background: linear-gradient(-45deg, #050505, #111111, #1a1a1a, #050505);
+    background-size: 400% 400%;
+    animation: mesh 15s ease infinite;
+  }
+  
+  .glow-orange {
+    filter: drop-shadow(0 0 15px rgba(255, 85, 0, 0.3));
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: var(--secondary);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--primary);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #e64d00;
   }
 }
 
