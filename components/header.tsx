@@ -2,288 +2,145 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingCart, Search, Menu, X, Moon, Sun, ArrowRight, TrendingUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShoppingCart, Globe, CreditCard, Menu, X, Search, Smartphone } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
-import { useTheme } from '@/contexts/ThemeContext';
-import { Button } from '@/components/ui/button';
+import { useSettings } from '@/contexts/SettingsContext';
 import { cn } from '@/lib/utils';
-import { products } from '@/lib/products';
-import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 
-const navItems = [
-  { label: 'Inicio', href: '/' },
-  { label: 'Catálogo', href: '/#catalog' },
-  { label: 'Sobre Nosotros', href: '/#about' },
-  { label: 'Contacto', href: '/#contact' },
-];
-
-export default function Header() {
+export function Header() {
+  const { itemCount } = useCart();
+  const { language, setLanguage, currency, setCurrency, t } = useSettings();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [currency, setCurrency] = useState<'USD' | 'XAF' | 'EUR'>('USD');
-  const [searchQuery, setSearchQuery] = useState('');
-  const pathname = usePathname();
-  const searchInputRef = React.useRef<HTMLInputElement>(null);
-  const searchDropdownRef = React.useRef<HTMLDivElement>(null);
-  const { itemCount } = useCart();
-  const { theme, toggleTheme } = useTheme();
-
-  const filteredProducts = searchQuery.trim() 
-    ? products.filter(p => 
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        p.category.toLowerCase().includes(searchQuery.toLowerCase())
-      ).slice(0, 5)
-    : [];
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchDropdownRef.current && !searchDropdownRef.current.contains(event.target as Node)) {
-        setIsSearchOpen(false);
-      }
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (isSearchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [isSearchOpen]);
-
-  const currencies = [
-    { label: 'USD', value: 'USD' },
-    { label: 'XAF', value: 'XAF' },
-    { label: 'EUR', value: 'EUR' },
-  ];
-
   return (
-    <header
+    <nav 
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4',
-        isScrolled ? 'bg-background/80 backdrop-blur-md border-b border-border/50' : 'bg-transparent'
+        "fixed top-0 left-0 w-full z-50 transition-all duration-500 px-6 py-4",
+        isScrolled ? "glass py-2" : "bg-transparent"
       )}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold tracking-tighter text-primary">
-          BAH.DEN
+        {/* Logo */}
+        <Link href="/" className="group flex flex-col">
+          <span className="font-display text-2xl font-bold tracking-[0.2em] text-foreground">
+            BAH.<span className="text-primary glow-primary">DAN</span>
+          </span>
+          <span className="text-[10px] tracking-[0.4em] text-muted-foreground font-accent">
+            PREMIUM ELITE
+          </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'text-sm font-medium transition-colors hover:text-primary',
-                pathname === item.href ? 'text-primary' : 'text-muted-foreground'
-              )}
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center space-x-8">
+          {['home', 'catalog', 'about', 'contact'].map((item) => (
+            <Link 
+              key={item} 
+              href={item === 'home' ? '/' : `/#${item}`}
+              className="group relative text-xs uppercase tracking-widest font-medium text-foreground hover:text-primary transition-colors"
             >
-              {item.label}
+              {t(`nav.${item}`)}
+              <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-primary transition-all group-hover:w-full" />
             </Link>
           ))}
-        </nav>
+        </div>
 
-        <div className="flex items-center gap-4">
-          {/* Currency Selector */}
-          <div className="hidden sm:flex items-center gap-1 bg-secondary/50 rounded-full px-2 py-1 border border-border/50">
-            {currencies.map((c) => (
-              <button
-                key={c.value}
-                onClick={() => setCurrency(c.value as any)}
-                className={cn(
-                  'text-[10px] font-mono px-2 py-0.5 rounded-full transition-all',
-                  currency === c.value ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="relative" ref={searchDropdownRef}>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className={cn("rounded-full transition-colors", isSearchOpen && "text-primary bg-secondary")}
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              onFocus={() => setIsSearchOpen(true)}
+        {/* Action Bar */}
+        <div className="flex items-center space-x-4">
+          {/* Lang Selector */}
+          <div className="hidden sm:flex items-center space-x-2 border-r border-border pr-4">
+            <button 
+              onClick={() => setLanguage(language === 'es' ? 'fr' : 'es')}
+              className="flex items-center space-x-1 text-[10px] uppercase tracking-tighter hover:text-primary transition-colors"
             >
-              <Search className="size-5" />
-            </Button>
-
-            <AnimatePresence>
-              {isSearchOpen && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute right-0 top-full mt-4 w-80 md:w-96 bg-background border border-border p-4 shadow-2xl z-50 rounded-none"
-                >
-                  <div className="relative mb-6">
-                    <input 
-                      ref={searchInputRef}
-                      type="text" 
-                      placeholder="Search elite technology..." 
-                      className="w-full bg-secondary/50 border-none px-4 py-3 pr-10 text-sm font-mono focus:ring-1 focus:ring-primary outline-none transition-all"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    {searchQuery ? (
-                      <button 
-                        onClick={() => setSearchQuery('')}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:text-primary transition-colors"
-                      >
-                        <X className="size-3" />
-                      </button>
-                    ) : (
-                      <Search className="absolute right-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                    )}
-                  </div>
-
-                  <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                    {searchQuery.trim() === '' ? (
-                      <div className="space-y-6">
-                        <div>
-                          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold mb-4 flex items-center gap-2">
-                            <TrendingUp className="size-3 text-primary" /> Trending Now
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            {['Titanium', 'Elite', 'Malabo', 'Pro', 'Boutique'].map((tag) => (
-                              <button 
-                                key={tag}
-                                onClick={() => setSearchQuery(tag)}
-                                className="text-[10px] font-mono px-3 py-1 bg-secondary hover:bg-primary hover:text-white transition-all border border-border/50"
-                              >
-                                {tag}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="py-4 border-t border-border/50">
-                          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold mb-4">Quick Links</p>
-                          <div className="grid grid-cols-2 gap-2">
-                            {navItems.map((item) => (
-                              <Link 
-                                key={item.href} 
-                                href={item.href}
-                                onClick={() => setIsSearchOpen(false)}
-                                className="text-xs font-medium p-2 hover:bg-secondary transition-colors border border-transparent hover:border-border/50"
-                              >
-                                {item.label}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    ) : filteredProducts.length > 0 ? (
-                      <>
-                        <p className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">Suggestions</p>
-                        <div className="space-y-3">
-                          {filteredProducts.map((product) => (
-                            <Link 
-                              key={product.id} 
-                              href={`/products/${product.id}`}
-                              onClick={() => setIsSearchOpen(false)}
-                              className="flex items-center gap-4 p-2 hover:bg-secondary transition-colors group border border-transparent hover:border-border/50"
-                            >
-                              <div className="relative size-12 bg-secondary overflow-hidden shrink-0">
-                                <Image 
-                                  src={product.image} 
-                                  alt={product.name} 
-                                  fill 
-                                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                                  referrerPolicy="no-referrer"
-                                />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="text-sm font-bold truncate group-hover:text-primary transition-colors">{product.name}</h4>
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-mono">{product.category}</p>
-                              </div>
-                              <span className="text-xs font-mono font-bold">${product.price}</span>
-                            </Link>
-                          ))}
-                        </div>
-                        <Link 
-                          href="/catalog" 
-                          onClick={() => setIsSearchOpen(false)}
-                          className="flex items-center justify-center gap-2 py-4 border-t border-border mt-4 text-[10px] uppercase tracking-[0.2em] font-bold hover:text-primary transition-all group"
-                        >
-                          View all products <ArrowRight className="size-3 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                      </>
-                    ) : (
-                      <div className="py-12 text-center">
-                        <p className="text-xs text-muted-foreground italic mb-2">No products found for &quot;{searchQuery}&quot;</p>
-                        <p className="text-[10px] uppercase tracking-widest text-primary font-bold">Try searching for &quot;Titanium&quot;</p>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+              <Globe className="size-3" />
+              <span>{language}</span>
+            </button>
+            <div className="group relative">
+              <button className="flex items-center space-x-1 text-[10px] uppercase tracking-tighter hover:text-primary transition-colors">
+                <CreditCard className="size-3" />
+                <span>{currency}</span>
+              </button>
+              <div className="absolute right-0 top-full mt-2 hidden group-hover:block glass p-2 w-20">
+                {['XAF', 'USD', 'EUR'].map((curr) => (
+                  <button 
+                    key={curr} 
+                    onClick={() => setCurrency(curr as any)}
+                    className="block w-full text-left text-[10px] py-1 hover:text-primary"
+                  >
+                    {curr}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
-          <Link href="/cart">
-            <Button variant="ghost" size="icon" className="rounded-full relative">
-              <ShoppingCart className="size-5" />
-              {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold size-4 rounded-full flex items-center justify-center">
-                  {itemCount}
-                </span>
-              )}
-            </Button>
+          {/* Cart Icon */}
+          <Link href="/cart" className="relative p-2 hover:bg-white/5 rounded-full transition-colors group">
+            <ShoppingCart className="size-5 text-foreground group-hover:text-primary" />
+            {itemCount > 0 && (
+              <motion.span 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute top-0 right-0 size-4 bg-primary text-[10px] flex items-center justify-center rounded-full text-white font-bold"
+              >
+                {itemCount}
+              </motion.span>
+            )}
           </Link>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden rounded-full"
+          {/* Mobile Menu Toggle */}
+          <button 
+            className="md:hidden p-2"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-          </Button>
+            {mobileMenuOpen ? <X /> : <Menu />}
+          </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background border-b overflow-hidden"
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute top-full left-0 w-full glass md:hidden overflow-hidden border-t border-border"
           >
-            <div className="flex flex-col p-6 gap-4">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-lg font-medium"
+            <div className="flex flex-col p-6 space-y-4">
+              {['home', 'catalog', 'about', 'contact'].map((item) => (
+                <Link 
+                  key={item} 
+                  href={`/#${item}`}
                   onClick={() => setMobileMenuOpen(false)}
+                  className="text-sm uppercase tracking-widest font-bold text-foreground"
                 >
-                  {item.label}
+                  {t(`nav.${item}`)}
                 </Link>
               ))}
+              <div className="flex items-center space-x-4 pt-4 border-t border-border">
+                <Button variant="ghost" size="sm" onClick={() => setLanguage(language === 'es' ? 'fr' : 'es')}>
+                  <Globe className="size-3 mr-2" /> {language.toUpperCase()}
+                </Button>
+                <Button variant="ghost" size="sm">
+                  <CreditCard className="size-3 mr-2" /> {currency}
+                </Button>
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </nav>
   );
 }
+
+export default Header;

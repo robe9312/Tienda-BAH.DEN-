@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Anton } from 'next/font/google';
+import { Inter, Space_Grotesk, Cairo } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/providers';
 
@@ -8,15 +8,19 @@ const inter = Inter({
   variable: '--font-sans',
 });
 
-const anton = Anton({
-  weight: '400',
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-display',
 });
 
+const cairo = Cairo({
+  subsets: ['latin', 'arabic'],
+  variable: '--font-accent',
+});
+
 export const metadata: Metadata = {
-  title: 'BAH.DEN — Elite Technology',
-  description: 'Una web de tecnología premium llamada BAH.DEN con diseño "Naranja Mecánico", que incluye un catálogo de productos, carrito de compras, modo oscuro/claro y un diseño moderno y responsivo.',
+  title: 'BAH.DAN — Premium Elite Technology',
+  description: 'Futuristic premium ecommerce platform. Modern Arabic luxury meets cyber premium tech.',
 };
 
 export default function RootLayout({
@@ -25,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" suppressHydrationWarning className={`${inter.variable} ${anton.variable}`}>
+    <html lang="es" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable} ${cairo.variable}`}>
       <body className="font-sans antialiased">
         <Providers>
           {children}

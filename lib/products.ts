@@ -1,51 +1,58 @@
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
-  specs: string[];
-  featured?: boolean;
-}
-
-export const products: Product[] = [
+export const demoProducts = [
   {
-    id: 'iphone-15-pro-max',
-    name: 'iPhone 15 Pro Max',
-    description: 'El titanio llega a BAH.DEN. Potencia, diseño y beneficios exclusivos en Malabo.',
-    price: 1499,
-    category: 'Smartphones',
-    image: 'https://picsum.photos/seed/iphone15/800/600',
-    specs: ['Chip A17 Pro', 'Cámara Pro de 48 MP', 'Titanio de grado aeroespacial'],
-    featured: true,
+    id: '1',
+    name_es: 'Titanium Phone Pro',
+    name_fr: 'Titanium Phone Pro',
+    price_xaf: 850000,
+    image: 'https://images.unsplash.com/photo-1616348436168-de43ad0db179?q=80&w=800&auto=format&fit=crop',
+    category: 'Symphony Tech',
+    is_featured: true,
   },
   {
-    id: 'macbook-pro-m3',
-    name: 'MacBook Pro M3',
-    description: 'Rendimiento extremo para profesionales. La pantalla Liquid Retina XDR más avanzada.',
-    price: 2499,
-    category: 'Laptops',
-    image: 'https://picsum.photos/seed/macbook/800/600',
-    specs: ['Chip M3 Pro', 'Hasta 128GB RAM', 'Pantalla ProMotion 120Hz'],
-    featured: true,
+    id: '2',
+    name_es: 'Visionary Book X',
+    name_fr: 'Visionary Book X',
+    price_xaf: 1800000,
+    image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=800&auto=format&fit=crop',
+    category: 'Future Pro',
+    is_featured: true,
   },
   {
-    id: 'apple-watch-ultra-2',
-    name: 'Apple Watch Ultra 2',
-    description: 'El reloj más resistente y capaz. Diseñado para la aventura y el rendimiento.',
-    price: 899,
-    category: 'Wearables',
-    image: 'https://picsum.photos/seed/watch/800/600',
-    specs: ['Caja de titanio', 'GPS de doble frecuencia', 'Hasta 36 horas de batería'],
+    id: '3',
+    name_es: 'Sonic Flow Audio',
+    name_fr: 'Sonic Flow Audio',
+    price_xaf: 250000,
+    image: 'https://images.unsplash.com/photo-1546435770-a3e426ff472b?q=80&w=800&auto=format&fit=crop',
+    category: 'Audio Legacy',
+    is_featured: true,
   },
   {
-    id: 'airpods-max',
-    name: 'AirPods Max',
-    description: 'Audio de alta fidelidad. Cancelación activa de ruido y sonido espacial.',
-    price: 549,
-    category: 'Audio',
-    image: 'https://picsum.photos/seed/airpods/800/600',
-    specs: ['Audio espacial', 'Cancelación de ruido', '20 horas de autonomía'],
+    id: '4',
+    name_es: 'Horizons Watch',
+    name_fr: 'Horizons Watch',
+    price_xaf: 450000,
+    image: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?q=80&w=800&auto=format&fit=crop',
+    category: 'Wearable Tech',
+    is_featured: true,
+  },
+  {
+    id: '5',
+    name_es: 'Quantum Rig Pro',
+    name_fr: 'Quantum Rig Pro',
+    price_xaf: 3200000,
+    image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800&auto=format&fit=crop',
+    category: 'Elite Gaming',
+    is_featured: false,
+  },
+  {
+    id: '6',
+    name_es: 'Nebula Tablet X',
+    name_fr: 'Nebula Tablet X',
+    price_xaf: 650000,
+    image: 'https://images.unsplash.com/photo-1561154464-82e9adf32764?q=80&w=800&auto=format&fit=crop',
+    category: 'Productivity',
+    is_featured: false,
   },
 ];
+
+export const products = demoProducts;

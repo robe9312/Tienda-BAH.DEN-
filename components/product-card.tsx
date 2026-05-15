@@ -1,90 +1,93 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { motion } from 'motion/react';
-import { ShoppingCart, Eye, ArrowRight, Plus } from 'lucide-react';
-import Link from 'next/link';
-import { Product } from '@/lib/products';
 import { useCart } from '@/contexts/CartContext';
+import { useSettings } from '@/contexts/SettingsContext';
 import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface ProductCardProps {
-  product: Product;
+export interface Product {
+  id: string;
+  name_es: string;
+  name_fr: string;
+  price_xaf: number;
+  image: string;
+  category: string;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const { language, currency, t } = useSettings();
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation();
-    addItem({
-      name: product.name,
-      price: product.price,
-      quantity: 1,
-      icon: product.image,
-      specs: product.specs,
+    addItem({ 
+      id: product.id, 
+      name: language === 'es' ? product.name_es : product.name_fr, 
+      price: product.price_xaf, 
+      quantity: 1, 
+      image: product.image 
     });
-    toast.success(`${product.name} añadido al carrito`);
+    toast.success(t('product.add'), {
+      className: 'glass border-primary text-foreground',
+    });
+  };
+
+  const getPriceByCurrency = () => {
+    if (currency === 'USD') return `$ ${(product.price_xaf / 600).toFixed(2)}`;
+    if (currency === 'EUR') return `€ ${(product.price_xaf / 655).toFixed(2)}`;
+    return `${product.price_xaf.toLocaleString()} XAF`;
   };
 
   return (
-    <Link href={`/products/${product.id}`}>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        className="group relative bg-background transition-all duration-500 hover:glow-orange"
-      >
-        <div className="aspect-[4/5] relative overflow-hidden bg-secondary/50">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
-            referrerPolicy="no-referrer"
-          />
-          
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-6 backdrop-blur-sm">
-            <div className="flex gap-4">
-              <Button size="icon" variant="outline" className="rounded-none border-white/20 hover:border-primary hover:bg-primary hover:text-white transition-all">
-                <Eye className="size-4" />
-              </Button>
-              <Button size="icon" className="rounded-none bg-white text-black hover:bg-primary hover:text-white transition-all" onClick={handleAddToCart}>
-                <Plus className="size-4" />
-              </Button>
-            </div>
-            <span className="text-[10px] uppercase tracking-[0.3em] font-mono font-bold text-white/60">Quick View</span>
-          </div>
-        </div>
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      className="group relative cyber-border p-4 bg-secondary/30 backdrop-blur-sm overflow-hidden"
+    >
+      {/* Glow Effect */}
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-primary/5 blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity" />
 
-        <div className="p-8 border-t border-border">
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase tracking-[0.2em] text-primary font-mono font-bold">{product.category}</span>
-              <span className="text-sm font-mono tracking-tighter">${product.price}</span>
-            </div>
-            
-            <h3 className="text-xl font-display leading-none tracking-tight group-hover:text-primary transition-colors">
-              {product.name}
-            </h3>
-            
-            <p className="text-xs text-muted-foreground font-light leading-relaxed line-clamp-2">
-              {product.description}
-            </p>
-
-            <button 
-              onClick={handleAddToCart}
-              className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-mono font-bold text-foreground hover:text-primary transition-all mt-2"
-            >
-              Add to collection <ArrowRight className="size-3" />
-            </button>
-          </div>
+      {/* Image */}
+      <div className="relative aspect-square mb-6 overflow-hidden bg-black/40">
+        <Image 
+          src={product.image} 
+          alt={product.name_es} 
+          fill 
+          className="object-contain p-4 group-hover:scale-110 transition-transform duration-700"
+          referrerPolicy="no-referrer"
+        />
+        <div className="absolute top-2 right-2">
+          <Button 
+            onClick={handleAdd}
+            size="icon" 
+            className="rounded-none bg-primary hover:bg-accent text-white shadow-[0_0_15px_rgba(197,160,89,0.3)]"
+          >
+            <Plus className="size-4" />
+          </Button>
         </div>
-      </motion.div>
-    </Link>
+      </div>
+
+      {/* Info */}
+      <div className="space-y-2">
+        <span className="text-[10px] tracking-[0.2em] text-primary uppercase font-accent">
+          {product.category}
+        </span>
+        <h4 className="font-display text-sm tracking-widest font-bold text-foreground">
+          {language === 'es' ? product.name_es : product.name_fr}
+        </h4>
+        <div className="pt-2 flex items-center justify-between">
+          <span className="font-mono text-xs font-bold text-foreground">
+            {getPriceByCurrency()}
+          </span>
+          <div className="size-2 bg-accent rounded-full animate-pulse" />
+        </div>
+      </div>
+    </motion.div>
   );
 }
+
+export default ProductCard;

@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'motion/react';
-import { Search, ArrowLeft, Filter, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, X, Loader2 } from 'lucide-react';
 import { products } from '@/lib/products';
-import ProductCard from '@/components/product-card';
-import Header from '@/components/header';
-import Footer from '@/components/footer';
+import { ProductCard } from '@/components/product-card';
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Suspense } from 'react';
@@ -26,8 +26,8 @@ function SearchContent() {
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const matchesQuery = 
-        product.name.toLowerCase().includes(query.toLowerCase()) ||
-        product.description.toLowerCase().includes(query.toLowerCase()) ||
+        product.name_es.toLowerCase().includes(query.toLowerCase()) ||
+        product.name_fr.toLowerCase().includes(query.toLowerCase()) ||
         product.category.toLowerCase().includes(query.toLowerCase());
       
       const matchesCategory = !selectedCategory || product.category === selectedCategory;
@@ -37,19 +37,27 @@ function SearchContent() {
   }, [query, selectedCategory]);
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-8">
-        <div className="flex-1 max-w-2xl">
-          <h1 className="text-4xl font-black tracking-tighter uppercase mb-6">
-            Resultados de <span className="text-primary">Búsqueda</span>
+    <div className="max-w-7xl mx-auto px-6">
+      <div className="flex flex-col space-y-12">
+        <div className="space-y-6">
+          <motion.span 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-primary font-accent tracking-[0.4em] uppercase text-xs"
+          >
+            Terminal de Búsqueda
+          </motion.span>
+          <h1 className="font-display text-4xl md:text-6xl font-bold tracking-tighter">
+            EXPLORAR <span className="text-primary">SISTEMA</span>
           </h1>
-          <div className="relative group">
+          
+          <div className="relative max-w-3xl group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar productos, marcas o categorías..."
-              className="pl-12 py-6 h-auto rounded-2xl text-lg bg-secondary/30 border-border/50 focus:border-primary/50 transition-all"
+              placeholder="Ej: Titanium, Gaming, Audio..."
+              className="pl-12 py-8 bg-secondary/20 border-white/10 rounded-none text-xl font-display tracking-widest focus:ring-1 focus:ring-primary"
             />
             {query && (
               <button
@@ -62,83 +70,54 @@ function SearchContent() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-4 border-b border-white/5 pb-8">
           <Button
             variant={selectedCategory === null ? 'default' : 'outline'}
-            size="sm"
-            className="rounded-full px-4"
+            className="rounded-none tracking-widest font-accent text-[10px] uppercase"
             onClick={() => setSelectedCategory(null)}
           >
-            Todos
+            ALL_DEVICES
           </Button>
           {categories.map(cat => (
             <Button
               key={cat}
               variant={selectedCategory === cat ? 'default' : 'outline'}
-              size="sm"
-              className="rounded-full px-4"
+              className="rounded-none tracking-widest font-accent text-[10px] uppercase"
               onClick={() => setSelectedCategory(cat)}
             >
-              {cat}
+              {cat.replace(' ', '_').toUpperCase()}
             </Button>
           ))}
         </div>
-      </div>
 
-      <div className="mb-8 flex items-center justify-between text-sm text-muted-foreground">
-        <p>
-          {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''} encontrado{filteredProducts.length !== 1 ? 's' : ''}
-          {query && <span> para &quot;<span className="text-primary font-bold">{query}</span>&quot;</span>}
-        </p>
-      </div>
-
-      {filteredProducts.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center py-32 bg-secondary/10 rounded-3xl border border-dashed border-border"
-        >
-          <div className="bg-secondary size-20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Search className="size-10 text-muted-foreground" />
+        {filteredProducts.length === 0 ? (
+          <div className="py-40 text-center glass border-dashed">
+            <p className="text-muted-foreground tracking-widest italic">SISTEMA:: Sin resultados para &quot;{query}&quot;</p>
           </div>
-          <h2 className="text-2xl font-bold mb-2">No se encontraron resultados</h2>
-          <p className="text-muted-foreground mb-8">Intenta con otros términos de búsqueda o explora nuestras categorías.</p>
-          <Button
-            variant="outline"
-            className="rounded-full font-bold px-8"
-            onClick={() => {
-              setQuery('');
-              setSelectedCategory(null);
-            }}
-          >
-            Limpiar búsqueda
-          </Button>
-        </motion.div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <AnimatePresence mode="popLayout">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </AnimatePresence>
-        </div>
-      )}
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <AnimatePresence>
+              {filteredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 export default function SearchPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
-
-      <main className="pt-32 pb-24 px-6">
-        <Suspense fallback={<div className="text-center py-32">Cargando resultados...</div>}>
+      <div className="pt-32 pb-20">
+        <Suspense fallback={<div className="flex justify-center py-40"><Loader2 className="animate-spin text-primary size-12" /></div>}>
           <SearchContent />
         </Suspense>
-      </main>
-
+      </div>
       <Footer />
-    </div>
+    </main>
   );
 }

@@ -3,7 +3,7 @@
 @theme {
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
-  --font-mono: var(--font-mono);
+  --font-accent: var(--font-accent);
   
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -20,53 +20,63 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
+  
+  --color-cyan: #00e5ff;
+  --color-gold: #c5a059;
+  --color-sand: #d4c4a8;
+  --color-obsidian: #050505;
+
+  --radius-lg: 0.5rem;
+  --radius-md: 0.25rem;
+  --radius-sm: 0.125rem;
 
   @keyframes mesh {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
+
+  @keyframes pulse-glow {
+    0%, 100% { filter: drop-shadow(0 0 5px rgba(197, 160, 89, 0.2)); }
+    50% { filter: drop-shadow(0 0 20px rgba(197, 160, 89, 0.4)); }
+  }
 }
 
 @layer base {
   :root {
-    --background: #ffffff;
-    --foreground: #000000;
-    --primary: #ff5500; /* More vibrant, high-end orange */
+    --background: #f5f5f5; /* White smoke */
+    --foreground: #050505;
+    --primary: #c5a059; /* Gold */
     --primary-foreground: #ffffff;
-    --secondary: #f5f5f5;
-    --secondary-foreground: #000000;
-    --muted: #f5f5f5;
+    --secondary: #e5e5e5;
+    --secondary-foreground: #050505;
+    --muted: #e5e5e5;
     --muted-foreground: #666666;
-    --accent: #f5f5f5;
-    --accent-foreground: #000000;
+    --accent: #00e5ff; /* Cyan */
+    --accent-foreground: #050505;
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
-    --border: #e5e5e5;
-    --input: #e5e5e5;
-    --ring: #ff5500;
-    --radius: 0rem; /* Sharp corners for brutalist/luxury feel */
+    --border: #d4d4d4;
+    --input: #d4d4d4;
+    --ring: #c5a059;
   }
 
   .dark {
-    --background: #050505; /* Deeper black */
-    --foreground: #ffffff;
-    --primary: #ff5500;
+    --background: #050505; /* Obsidian */
+    --foreground: #f5f5f5;
+    --primary: #c5a059;
     --primary-foreground: #ffffff;
-    --secondary: #111111;
-    --secondary-foreground: #ffffff;
-    --muted: #111111;
+    --secondary: #0f0f0f; /* Graphite */
+    --secondary-foreground: #f5f5f5;
+    --muted: #0f0f0f;
     --muted-foreground: #888888;
-    --accent: #111111;
-    --accent-foreground: #ffffff;
+    --accent: #00e5ff;
+    --accent-foreground: #050505;
     --destructive: #7f1d1d;
     --destructive-foreground: #ffffff;
     --border: #1a1a1a;
     --input: #1a1a1a;
-    --ring: #ff5500;
+    --ring: #c5a059;
   }
 }
 
@@ -82,47 +92,61 @@
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    text-transform: uppercase;
     letter-spacing: -0.02em;
   }
 }
 
 @layer utilities {
   .bg-mesh {
-    background: linear-gradient(-45deg, #050505, #111111, #1a1a1a, #050505);
+    background: linear-gradient(-45deg, #050505, #0f0f0f, #1a1a1a, #050505);
     background-size: 400% 400%;
     animation: mesh 15s ease infinite;
   }
   
-  .glow-orange {
-    filter: drop-shadow(0 0 15px rgba(255, 85, 0, 0.3));
+  .glow-primary {
+    filter: drop-shadow(0 0 15px rgba(197, 160, 89, 0.3));
   }
 
-  .font-mono {
-    font-family: var(--font-mono);
+  .glow-accent {
+    filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.3));
+  }
+
+  .font-accent {
+    font-family: var(--font-accent);
+  }
+
+  .glass {
+    @apply bg-background/60 backdrop-blur-xl border border-white/10;
+  }
+
+  .cyber-border {
+    position: relative;
+    border: 1px solid theme('colors.primary');
+    box-shadow: 0 0 10px rgba(197, 160, 89, 0.2);
+  }
+  
+  .cyber-border::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    width: 10px;
+    height: 10px;
+    border-top: 2px solid theme('colors.accent');
+    border-right: 2px solid theme('colors.accent');
   }
 
   .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: var(--secondary);
+    background: var(--background);
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: var(--primary);
+    border-radius: 10px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #e64d00;
-  }
-}
-
-@keyframes slideInFromLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+    background: var(--accent);
   }
 }
